@@ -1,0 +1,17 @@
+{
+  "name": "api_asistencia",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --env-file=.env ./src/main.js",
+    "start": "node --env-file=.env ./src/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "fastify": "^4.28.1",
+    "nodemon": "^3.1.4"
+  }
+}
