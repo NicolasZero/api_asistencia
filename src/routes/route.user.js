@@ -1,4 +1,4 @@
-const routesUser = [{
+const routes = [{
     method: 'GET',
     url: '/user',
     handler: function (request, reply) {
@@ -12,5 +12,4 @@ const routesUser = [{
         reply.send({ data: 'a user data' })
     }
 }]
-
-module.exports = routesUser
+module.exports = routes
