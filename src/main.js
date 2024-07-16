@@ -1,5 +1,5 @@
 const fastify = require('fastify')(
-    {logger: true}
+    {logger: false}
 )
 
 const routeLicense = require('./routes/routes.js')
@@ -13,8 +13,6 @@ routeLicense.forEach(route => {
     fastify.route(route)
 })
 
-// console.log(routeLicense)
-
 const start = async () => {
     try {
         // Start the server on port 3000, listening on all network interfaces
@@ -27,5 +25,4 @@ const start = async () => {
         process.exit(1)
     }
 }
-
 start()
