@@ -1,7 +1,7 @@
 -- Crear un esquema
 CREATE SCHEMA general;
 
-create table attendance_control.workers (
+create table general.workers (
     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
     identity_card integer NOT NULL UNIQUE,
     is_foreign boolean NOT NULL DEFAULT false,

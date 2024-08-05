@@ -1,6 +1,6 @@
 const { query } = require('../db/postgresql')
 
-const getAllAttend = async (request, reply) => {
+const getAllAttendances = async (request, reply) => {
     try {
         const date = new Date()
         const year = date.getFullYear()
@@ -22,7 +22,7 @@ const getAllAttend = async (request, reply) => {
     }
 }
 
-const getAttend = async (request, reply) => {
+const getAttendance = async (request, reply) => {
     try {
         const {id} = request.params
         
@@ -36,7 +36,18 @@ const getAttend = async (request, reply) => {
     }
 }
 
+const postAttendances = async (request, reply) => {
+    try {
+        const {id} = request.body
+        
+        reply.send({ data: resp.row })
+    } catch (error) {
+        reply.send({error:'error'})
+        console.log(error)
+    }
+}
+
 module.exports = {
-    getAllAttend,
-    getAttend
+    getAllAttendances,
+    getAttendance
 }
