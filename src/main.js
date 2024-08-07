@@ -1,6 +1,11 @@
 const fastify = require("fastify")({ logger: true });
 const { verification } = require("./db/postgresql");
 const routeLicense = require("./routes/routes.js");
+const cors = require('@fastify/cors') 
+
+fastify.register(cors, { 
+  // put your options here
+})
 
 // Database connection verification
 verification()
