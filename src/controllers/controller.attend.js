@@ -46,13 +46,14 @@ const checkIn = async (request, reply) => {
 
         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
 
-        if (resp.rows.lenght != 0) {
-            const resp = query("INSERT INTO attendance_control.attendance (worker_id) VALUES ($1)", [id])
-            return reply.send({data:resp.rows})
+        if (resp.rows.length == 0) {
+            const resp2 = await query("INSERT INTO attendance_control.attendance (worker_id) VALUES ($1)", [id])
+            if (resp2.rowCount == 1) {
+                return reply.send({ data: "registrado" })
+            }
         }
 
-
-        // reply.send({ data: 'ok', id })
+        reply.send({ error: "ya registro hora de salida" })
     } catch (error) {
         reply.send({ error: 'error' })
         console.log(error)
@@ -67,9 +68,16 @@ const checkOut = async (request, reply) => {
             return reply.send({ error: 'body not valid' })
         }
 
-        const resp = query("UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE id = $1", [id])
+        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1", [id])
 
-        reply.send({ data: 'ok', id })
+        if (resp.rows.length == 0) {
+            return reply.send({ error: "ya registro hora de salida" })
+        }
+        
+        const resp2 = await query("UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
+        if (resp2.rowCount == 1) {
+            return reply.send({ data: "Actualizado" })
+        }
     } catch (error) {
         reply.send({ error: 'error' })
         console.log(error)
