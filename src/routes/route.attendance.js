@@ -1,4 +1,4 @@
-const { getAllAttendances, getAttendance } = require("../controllers/controller.attend");
+const { getAllAttendances, getAttendance, checkIn, checkOut } = require("../controllers/controller.attend");
 
 const routes = [
   {
@@ -14,7 +14,14 @@ const routes = [
   {
     method: "POST",
     url: "/attendance",
-    handler: getAttendance,
+    handler: checkIn
+    // body: id
+  },
+  {
+    method: "PATCH",
+    url: "/attendance",
+    handler: checkOut,
+    // body: id
   }
 ];
 

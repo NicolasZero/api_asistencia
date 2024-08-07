@@ -36,12 +36,12 @@ CREATE TABLE IF NOT EXISTS general.contact(
 
 CREATE TABLE IF NOT EXISTS general.department(
     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
-    department varchar(200) NOT NULL UNIQUE,
+    department varchar(200) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS general.position(
     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
-    position varchar(200) NOT NULL UNIQUE,    
+    position varchar(200) NOT NULL UNIQUE
 );
 
 ALTER TABLE general.workers ADD CONSTRAINT fk_workers_gender_id FOREIGN KEY (gender_id) references genders(id);

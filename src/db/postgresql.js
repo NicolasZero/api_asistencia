@@ -17,7 +17,7 @@ const verification = async () => {
     const res = await pool.query("SELECT $1::text as message", [
       "Connected to the database!",
     ])
-    console.log(res.rows[0].message) // Hello world!
+    console.log(res.rows[0].message)
   } catch (err) {
     console.error(err)
     process.exit(1);

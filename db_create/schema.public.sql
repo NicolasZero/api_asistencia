@@ -5,15 +5,15 @@
 --     ethnicity varchar NOT NULL UNIQUE
 -- );
 
-CREATE TABLE IF NOT EXISTS genders(
-    id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
-    gender varchar NOT NULL UNIQUE
-);
-
 -- CREATE TABLE civil_status(
 --     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
 --     civil_status varchar NOT NULL
 -- );
+
+CREATE TABLE IF NOT EXISTS genders(
+    id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
+    gender varchar NOT NULL UNIQUE
+);
 
 CREATE TABLE IF NOT EXISTS states(
     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1 MAXVALUE 24),

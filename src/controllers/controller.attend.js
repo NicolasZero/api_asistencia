@@ -11,43 +11,74 @@ const getAllAttendances = async (request, reply) => {
         // date.toLocaleDateString()
         // const dateFormat = date.toJSON().slice(0,10)
 
-        
-        const resp = query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE")
+
+        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE")
         // reply.send({ data: date.toLocaleDateString('en-US', { timeZone: 'America/New_York' }) })
         reply.send({ data: resp.row })
 
     } catch (error) {
-        reply.send({error:'error'})
+        reply.send({ error: 'error' })
         console.log(error)
     }
 }
 
 const getAttendance = async (request, reply) => {
     try {
-        const {id} = request.params
-        
+        const { id } = request.params
+
         // reply.send({ data: 'a user data' })
         // reply.send({data:`user data of id: ${id}`})
-        const resp = query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND id_worker = $1", [id])
+        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
         reply.send({ data: resp.row })
     } catch (error) {
-        reply.send({error:'error'})
+        reply.send({ error: 'error' })
         console.log(error)
     }
 }
 
-const postAttendances = async (request, reply) => {
+const checkIn = async (request, reply) => {
     try {
-        const {id} = request.body
-        
-        reply.send({ data: resp.row })
+        const { id } = request.body
+
+        if (typeof id !== "number") {
+            return reply.send({ error: 'body not valid' })
+        }
+
+        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
+
+        if (resp.rows.lenght != 0) {
+            const resp = query("INSERT INTO attendance_control.attendance (worker_id) VALUES ($1)", [id])
+            return reply.send({data:resp.rows})
+        }
+
+
+        // reply.send({ data: 'ok', id })
     } catch (error) {
-        reply.send({error:'error'})
+        reply.send({ error: 'error' })
+        console.log(error)
+    }
+}
+
+const checkOut = async (request, reply) => {
+    try {
+        const { id } = request.body
+
+        if (typeof id !== "number") {
+            return reply.send({ error: 'body not valid' })
+        }
+
+        const resp = query("UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE id = $1", [id])
+
+        reply.send({ data: 'ok', id })
+    } catch (error) {
+        reply.send({ error: 'error' })
         console.log(error)
     }
 }
 
 module.exports = {
     getAllAttendances,
-    getAttendance
+    getAttendance,
+    checkIn,
+    checkOut
 }
