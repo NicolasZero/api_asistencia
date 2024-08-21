@@ -57,3 +57,14 @@ ALTER TABLE general.location ADD CONSTRAINT fk_location_state_id FOREIGN KEY (st
 ALTER TABLE general.location ADD CONSTRAINT fk_location_municipality_id FOREIGN KEY (municipality_id) references municipalities(id);
 
 ALTER TABLE general.location ADD CONSTRAINT fk_location_parish_id FOREIGN KEY (parish_id) references parishes(id);
+
+CREATE VIEW general.view_location AS SELECT l.*, s.state, m.municipality, p.parish FROM general.location AS l
+LEFT JOIN states AS s ON l.state_id = s.id
+LEFT JOIN municipalities AS m ON l.municipality_id = m.id 
+LEFT JOIN parishes AS p ON l.parish_id = p.id;
+
+CREATE VIEW general.view_workers AS SELECT w.*, g.gender, d.department, p.position, l.state_id, l.state, l.municipality_id, l.municipality, l.parish_id, l.parish, l.address FROM general.workers AS w
+LEFT JOIN genders AS g ON g.id = w.gender_id
+LEFT JOIN general.view_location AS l ON w.id = l.worker_id
+LEFT JOIN general.department AS d ON d.id = w.department_id
+LEFT JOIN general.position AS p ON p.id = w.position_id;
