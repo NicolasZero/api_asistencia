@@ -1,0 +1,24 @@
+-- Public
+CREATE VIEW view_location AS SELECT m.state_id, s.state, p.municipality_id, m.municipality, p.id AS parish_id, p.parish FROM parishes AS p
+LEFT JOIN municipalities AS m ON p.municipality_id = m.id 
+LEFT JOIN states AS s ON m.state_id = s.id;
+
+-- general
+-- CREATE VIEW general.view_location_workers AS SELECT l.*, s.state, m.municipality, p.parish FROM general.location AS l
+-- LEFT JOIN states AS s ON l.state_id = s.id
+-- LEFT JOIN municipalities AS m ON l.municipality_id = m.id 
+-- LEFT JOIN parishes AS p ON l.parish_id = p.id;
+
+CREATE VIEW general.view_location_workers AS SELECT l.*, v.state, v.municipality, v.parish FROM general.location AS l
+LEFT JOIN view_location AS v ON l.parish_id = v.parish_id;
+
+CREATE VIEW general.view_workers AS SELECT w.*, g.gender, d.department, p.position, l.state_id, l.state, l.municipality_id, l.municipality, l.parish_id, l.parish, l.address FROM general.workers AS w
+LEFT JOIN genders AS g ON g.id = w.gender_id
+LEFT JOIN general.view_location_workers AS l ON w.id = l.worker_id
+LEFT JOIN general.department AS d ON d.id = w.department_id
+LEFT JOIN general.position AS p ON p.id = w.position_id;
+
+-- attendance_control
+CREATE VIEW attendance_control.view_attendance AS SELECT a.*, w.identity_card, w.names, w.last_names, w.status, w.gender, w.gender_id, w.department, w.department_id
+FROM attendance_control.attendance as a
+LEFT JOIN general.view_workers as w ON w.id = a.worker_id;

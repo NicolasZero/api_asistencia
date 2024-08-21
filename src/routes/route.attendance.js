@@ -1,4 +1,4 @@
-const { getAllAttendances, getAttendance, checkIn, checkOut, getAttendanceByFilter } = require("../controllers/controller.attend");
+const { getAllAttendances, checkIn, checkOut, getAttendanceByFilter } = require("../controllers/controller.attend");
 
 const routes = [
   {
@@ -9,7 +9,7 @@ const routes = [
   {
     method: "POST",
     url: "/attendance/filter",
-    // { date_end:string, date_start:string, department:number, ic:number } body
+    // body: { date_end:string, date_start:string, department:number, ic:number }
     handler: getAttendanceByFilter,
   },
   {

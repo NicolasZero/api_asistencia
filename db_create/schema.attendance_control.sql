@@ -30,7 +30,3 @@ ALTER TABLE attendance_control.attendance ADD CONSTRAINT fk_attendance_worker_id
 ALTER TABLE attendance_control.users ADD CONSTRAINT fk_users_worker_id FOREIGN KEY (worker_id) references general.workers(id);
 
 ALTER TABLE attendance_control.users ADD CONSTRAINT fk_users_role_id FOREIGN KEY (role_id) references attendance_control.roles(id);
-
-CREATE VIEW attendance_control.view_attendance AS SELECT a.*, w.identity_card, w.names, w.last_names, w.status, w.gender, w.gender_id, w.department, w.department_id
-FROM attendance_control.attendance as a
-LEFT JOIN general.view_workers as w ON w.id = a.worker_id;

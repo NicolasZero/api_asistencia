@@ -17,16 +17,16 @@ const getAllAttendances = async (request, reply) => {
     }
 };
 
-const getAttendance = async (request, reply) => {
-    try {
-        const { id } = request.params;
-        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1",[id])
-        reply.send({ data: resp.rows, status: "ok"});
-    } catch (error) {
-        reply.code(409).send({ error: "error", status:"failed" });
-        console.log(error);
-    }
-};
+// const getAttendance = async (request, reply) => {
+//     try {
+//         const { id } = request.params;
+//         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1",[id])
+//         reply.send({ data: resp.rows, status: "ok"});
+//     } catch (error) {
+//         reply.code(409).send({ error: "error", status:"failed" });
+//         console.log(error);
+//     }
+// };
 
 const getAttendanceByFilter = async (request, reply) => {
     try {
@@ -137,7 +137,6 @@ const checkOut = async (request, reply) => {
 
 module.exports = {
     getAllAttendances,
-    getAttendance,
     checkIn,
     checkOut,
     getAttendanceByFilter,
