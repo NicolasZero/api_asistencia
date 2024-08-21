@@ -9,8 +9,10 @@ const { query } = require("../db/postgresql");
 
 const getAllAttendances = async (request, reply) => {
     try {
-        const resp = await query("SELECT * FROM attendance_control.view_attendance WHERE date_attendance = CURRENT_DATE")
+        const textQuery = "SELECT id, worker_id, TO_CHAR(date_attendance, 'dd/mm/yyyy') as date_attendance, TO_CHAR(check_in,'HH24:MI') as check_in, TO_CHAR(check_out,'HH24:MI') as check_out,identity_card,full_name,status,gender,gender_id,department,department_id FROM attendance_control.view_attendance WHERE date_attendance = CURRENT_DATE";
+        const resp = await query(textQuery)
         reply.send({ data: resp.rows, status: "ok"});
+        console.log(resp.rows);
     } catch (error) {
         reply.code(409).send({ error: "error", status:"failed"});
         console.log(error);
@@ -44,17 +46,17 @@ const getAttendanceByFilter = async (request, reply) => {
         }
 
         // Guarda en una variable el query, para editarlo segun los filtros
-        let textQuery = "SELECT * FROM attendance_control.view_attendance WHERE true"
+        let textQuery = "SELECT id, worker_id, TO_CHAR(date_attendance, 'dd/mm/yyyy') as date_attendance, TO_CHAR(check_in,'HH24:MI') as check_in, TO_CHAR(check_out,'HH24:MI') as check_out,identity_card,full_name,status,gender,gender_id,department,department_id FROM attendance_control.view_attendance WHERE true"
         let valueQuery = []
         let num = 1
 
         // filter by date
         if (date_end && date_start) {
-            if (new Date(date_end) > new Date(date_start)) {
+            if (new Date(date_end) < new Date(date_start)) {
                 return reply.code(400).send({ error: "Rango de fecha no valido", status:"failed" })
             }
             textQuery += " AND date_attendance BETWEEN $1 AND $2"
-            valueQuery.push(date_end, date_start)
+            valueQuery.push(date_start,date_end)
             num = 3
         }
 

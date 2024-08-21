@@ -4,7 +4,7 @@ CREATE SCHEMA attendance_control;
 create table attendance_control.attendance (
     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
     worker_id integer NOT NULL,
-    date_attendance date NOT NULL DEFAULT CURRENT_DATE,
+    date_attendance DATE NOT NULL DEFAULT CURRENT_DATE,
     check_in time NOT NULL DEFAULT CURRENT_TIME,
     check_out time DEFAULT NULL
 );
