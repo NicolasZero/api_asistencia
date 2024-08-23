@@ -19,17 +19,6 @@ const getAllAttendances = async (request, reply) => {
     }
 };
 
-// const getAttendance = async (request, reply) => {
-//     try {
-//         const { id } = request.params;
-//         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1",[id])
-//         reply.send({ data: resp.rows, status: "ok"});
-//     } catch (error) {
-//         reply.code(409).send({ error: "error", status:"failed" });
-//         console.log(error);
-//     }
-// };
-
 const getAttendanceByFilter = async (request, reply) => {
     try {
         // const { id } = request.params
@@ -82,33 +71,6 @@ const getAttendanceByFilter = async (request, reply) => {
     }
 };
 
-// const checkIn = async (request, reply) => {
-//     try {
-//         const { id } = request.body
-
-//         // verifica que el request body sea valido
-//         if (typeof id !== "number") {
-//             return reply.code(400).send({ error: "body not valid", status: "failed" })
-//         }
-
-//         // Busca si existe un registro de asistencia del dia de hoy de ese trabajador
-//         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
-
-//         // Si no existe, registra la asistencia
-//         if (resp.rows.length == 0) {
-//             const resp2 = await query("INSERT INTO attendance_control.attendance (worker_id) VALUES ($1)", [id])
-//             if (resp2.rowCount == 1) {
-//                 return reply.code(201).send({ data: "registrado", status: "ok" })
-//             }
-//         }
-
-//         return reply.code(400).send({ error: "Ese trabajador ya registro su hora de entrada del dia de hoy", status: "failed" });
-//     } catch (error) {
-//         reply.code(409).send({ error: "error", status: "failed" });
-//         console.log(error)
-//     }
-// };
-
 const checkIn = async (request, reply) => {
     try {
         const { id } = request.body
@@ -137,34 +99,6 @@ const checkIn = async (request, reply) => {
     }
 }
 
-// const checkOut = async (request, reply) => {
-//     try {
-//         const { id } = request.body
-
-//         // verifica que el request body sea valido
-//         if (typeof id !== "number") {
-//             return reply.code(400).send({ error: "body not valid", status: "failed" });
-//         }
-
-//         // Busca si existe un registro de asistencia del dia de hoy de ese trabajador
-//         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1", [id])
-
-//         // Si no existe, termina el proceso
-//         if (resp.rows.length == 0) {
-//             return reply.code(400).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
-//         }
-
-//         // actualiza el campo de salida del registro de asistencia
-//         const resp2 = await query("UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
-//         if (resp2.rowCount == 1) {
-//             return reply.code(204).send({ data: "Actualizado", status: "ok" });
-//         }
-//     } catch (error) {
-//         reply.code(409).send({ error: "error", status: "failed" })
-//         console.log(error)
-//     }
-// }
-
 const checkOut = async (request, reply) => {
     try {
         const {id} = request.body
@@ -175,12 +109,13 @@ const checkOut = async (request, reply) => {
 
         // actualiza el campo de salida del registro de asistencia del trabajador si está en null y si es del dia de hoy
         const queryText ="UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1"
-        const resp = query(queryText,[id])
+        const resp = await query(queryText,[id])
+        console.log(resp)
         if (resp.rowCount != 1) {
             return reply.code(409).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
         }
 
-        return reply.code(204).send({ data: "Actualizado", status: "ok" });
+        return reply.code(201).send({ data: "Actualizado", status: "ok" });
     } catch (error) {
         reply.code(409).send({error: "error", status: "failed"})
     }
