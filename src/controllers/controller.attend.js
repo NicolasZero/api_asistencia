@@ -11,10 +11,10 @@ const getAllAttendances = async (request, reply) => {
     try {
         const textQuery = "SELECT id, worker_id, TO_CHAR(date_attendance, 'dd/mm/yyyy') as date_attendance, TO_CHAR(check_in,'HH24:MI') as check_in, TO_CHAR(check_out,'HH24:MI') as check_out,identity_card,full_name,status,gender,gender_id,department,department_id FROM attendance_control.view_attendance WHERE date_attendance = CURRENT_DATE";
         const resp = await query(textQuery)
-        reply.send({ data: resp.rows, status: "ok"});
+        reply.send({ data: resp.rows, status: "ok" });
         console.log(resp.rows);
     } catch (error) {
-        reply.code(409).send({ error: "error", status:"failed"});
+        reply.code(409).send({ error: "error", status: "failed" });
         console.log(error);
     }
 };
@@ -40,9 +40,9 @@ const getAttendanceByFilter = async (request, reply) => {
             (typeof department !== "number" && typeof department !== "undefined") ||
             (typeof ic !== "number" && typeof ic !== "undefined")
         ) {
-            console.log(typeof department)
-            console.log(typeof ic)
-            return reply.code(400).send({ error: "body not valid", status:"failed" })
+            // console.log(typeof department)
+            // console.log(typeof ic)
+            return reply.code(400).send({ error: "body not valid", status: "failed" })
         }
 
         // Guarda en una variable el query, para editarlo segun los filtros
@@ -53,10 +53,10 @@ const getAttendanceByFilter = async (request, reply) => {
         // filter by date
         if (date_end && date_start) {
             if (new Date(date_end) < new Date(date_start)) {
-                return reply.code(400).send({ error: "Rango de fecha no valido", status:"failed" })
+                return reply.code(400).send({ error: "Rango de fecha no valido", status: "failed" })
             }
             textQuery += " AND date_attendance BETWEEN $1 AND $2"
-            valueQuery.push(date_start,date_end)
+            valueQuery.push(date_start, date_end)
             num = 3
         }
 
@@ -64,7 +64,7 @@ const getAttendanceByFilter = async (request, reply) => {
         if (department) {
             textQuery += ` AND department_id = $${num}`
             valueQuery.push(department)
-            num += 1 
+            num += 1
         }
 
         // filter by worker
@@ -77,10 +77,37 @@ const getAttendanceByFilter = async (request, reply) => {
         return reply.send({ data: resp.rows, status: "ok" })
 
     } catch (error) {
-        reply.code(409).send({ error: "error", status:"failed" })
+        reply.code(409).send({ error: "error", status: "failed" })
         console.log(error)
     }
 };
+
+// const checkIn = async (request, reply) => {
+//     try {
+//         const { id } = request.body
+
+//         // verifica que el request body sea valido
+//         if (typeof id !== "number") {
+//             return reply.code(400).send({ error: "body not valid", status: "failed" })
+//         }
+
+//         // Busca si existe un registro de asistencia del dia de hoy de ese trabajador
+//         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
+
+//         // Si no existe, registra la asistencia
+//         if (resp.rows.length == 0) {
+//             const resp2 = await query("INSERT INTO attendance_control.attendance (worker_id) VALUES ($1)", [id])
+//             if (resp2.rowCount == 1) {
+//                 return reply.code(201).send({ data: "registrado", status: "ok" })
+//             }
+//         }
+
+//         return reply.code(400).send({ error: "Ese trabajador ya registro su hora de entrada del dia de hoy", status: "failed" });
+//     } catch (error) {
+//         reply.code(409).send({ error: "error", status: "failed" });
+//         console.log(error)
+//     }
+// };
 
 const checkIn = async (request, reply) => {
     try {
@@ -88,52 +115,74 @@ const checkIn = async (request, reply) => {
 
         // verifica que el request body sea valido
         if (typeof id !== "number") {
-            return reply.code(400).send({ error: "body not valid", status:"failed"})
+            return reply.code(400).send({ error: "body not valid", status: "failed" });
         }
 
-        // Busca si existe un registro de asistencia del dia de hoy de ese trabajador
-        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND worker_id = $1",[id])
+        // SQL que inserta la asistenca solo si no está ya registrada el dia de hoy
+        const queryText = "INSERT INTO attendance_control.attendance (worker_id, date_attendance, check_in)" +
+            "SELECT $1, current_date, current_time WHERE NOT EXISTS" +
+            "(select date_attendance from attendance_control.attendance where date_attendance = current_date and worker_id = $1)"
         
-        // Si no existe, registra la asistencia
-        if (resp.rows.length == 0) {
-            const resp2 = await query("INSERT INTO attendance_control.attendance (worker_id) VALUES ($1)",[id])
-            if (resp2.rowCount == 1) {
-                return reply.code(201).send({data:"registrado",status:"ok"})
-            }
+        const resp = await query(queryText,[id])
+        console.log(resp)
+        
+        if (resp.rowCount != 1) {
+            return reply.code(409).send({ error: "Ese trabajador ya registro su hora de entrada del dia de hoy", status: "failed" });
         }
 
-        return reply.code(400).send({error:"Ese trabajador ya registro su hora de entrada del dia de hoy", status:"failed"});
+        return reply.code(201).send({ data: "registrado", status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error",status:"failed" });
+        reply.code(409).send({ error: "error", status: "failed" });
         console.log(error)
     }
-};
+}
+
+// const checkOut = async (request, reply) => {
+//     try {
+//         const { id } = request.body
+
+//         // verifica que el request body sea valido
+//         if (typeof id !== "number") {
+//             return reply.code(400).send({ error: "body not valid", status: "failed" });
+//         }
+
+//         // Busca si existe un registro de asistencia del dia de hoy de ese trabajador
+//         const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1", [id])
+
+//         // Si no existe, termina el proceso
+//         if (resp.rows.length == 0) {
+//             return reply.code(400).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
+//         }
+
+//         // actualiza el campo de salida del registro de asistencia
+//         const resp2 = await query("UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND worker_id = $1", [id])
+//         if (resp2.rowCount == 1) {
+//             return reply.code(204).send({ data: "Actualizado", status: "ok" });
+//         }
+//     } catch (error) {
+//         reply.code(409).send({ error: "error", status: "failed" })
+//         console.log(error)
+//     }
+// }
 
 const checkOut = async (request, reply) => {
     try {
-        const { id } = request.body
-
+        const {id} = request.body
         // verifica que el request body sea valido
         if (typeof id !== "number") {
-            return reply.code(400).send({ error: "body not valid", status:"failed"});
+            return reply.code(400).send({ error: "body not valid", status: "failed" });
         }
 
-        // Busca si existe un registro de asistencia del dia de hoy de ese trabajador
-        const resp = await query("SELECT * FROM attendance_control.attendance WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1",[id])
-
-        // Si no existe, termina el proceso
-        if (resp.rows.length == 0) {
-            return reply.code(400).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status:"failed" });
+        // actualiza el campo de salida del registro de asistencia del trabajador si está en null y si es del dia de hoy
+        const queryText ="UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1"
+        const resp = query(queryText,[id])
+        if (resp.rowCount != 1) {
+            return reply.code(409).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
         }
 
-        // actualiza el campo de salida del registro de asistencia
-        const resp2 = await query("UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND worker_id = $1",[id])
-        if (resp2.rowCount == 1) {
-            return reply.code(204).send({ data: "Actualizado", status:"ok" });
-        }
+        return reply.code(204).send({ data: "Actualizado", status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status:"failed" })
-        console.log(error)
+        reply.code(409).send({error: "error", status: "failed"})
     }
 }
 

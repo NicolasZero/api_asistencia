@@ -4,11 +4,6 @@ LEFT JOIN municipalities AS m ON p.municipality_id = m.id
 LEFT JOIN states AS s ON m.state_id = s.id;
 
 -- general
--- CREATE VIEW general.view_location_workers AS SELECT l.*, s.state, m.municipality, p.parish FROM general.location AS l
--- LEFT JOIN states AS s ON l.state_id = s.id
--- LEFT JOIN municipalities AS m ON l.municipality_id = m.id 
--- LEFT JOIN parishes AS p ON l.parish_id = p.id;
-
 CREATE VIEW general.view_location_workers AS SELECT l.*, v.state, v.municipality, v.parish FROM general.location AS l
 LEFT JOIN view_location AS v ON l.parish_id = v.parish_id;
 

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS general.workers (
     position_id integer NOT NULL,
     status varchar NOT NULL DEFAULT true,
     created date DEFAULT CURRENT_DATE,
-    updated date DEFAULT CURRENT_DATE
+    updated date
 );
 
 CREATE TABLE IF NOT EXISTS general.location(
@@ -29,8 +29,9 @@ CREATE TABLE IF NOT EXISTS general.contact(
     id integer NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY (START WITH 1),
     worker_id integer NOT NULL UNIQUE,
     email varchar(200) DEFAULT '',
-    phone varchar(20) DEFAULT '',
-    phone2 varchar(20) DEFAULT ''
+    email2 varchar(200) DEFAULT '',
+    phone integer(20) DEFAULT '',
+    phone2 integer(20) DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS general.department(

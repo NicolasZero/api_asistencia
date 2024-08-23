@@ -17,7 +17,7 @@ create table attendance_control.users (
     role_id integer NOT NULL,
     is_active boolean NOT NULL DEFAULT true,
     created date DEFAULT CURRENT_DATE,
-    updated date DEFAULT CURRENT_DATE
+    updated date
 );
 
 CREATE TABLE attendance_control.roles(
