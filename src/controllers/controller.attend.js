@@ -110,7 +110,6 @@ const checkOut = async (request, reply) => {
         // actualiza el campo de salida del registro de asistencia del trabajador si está en null y si es del dia de hoy
         const queryText ="UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1"
         const resp = await query(queryText,[id])
-        console.log(resp)
         if (resp.rowCount != 1) {
             return reply.code(409).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
         }
