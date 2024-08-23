@@ -6,6 +6,6 @@ Orden/Order
 2° - schema.general
 3° - schema.attendance_control
 4° - insert.public
-5° - insert.data
-6° - views
+5° - views
+6° - insert.data
 n° - insert.data.test
