@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS general.contact(
     worker_id integer NOT NULL UNIQUE,
     email varchar(200) DEFAULT '',
     email2 varchar(200) DEFAULT '',
-    phone integer(20) DEFAULT '',
-    phone2 integer(20) DEFAULT ''
+    phone varchar(20) DEFAULT '',
+    phone2 varchar(20) DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS general.department(

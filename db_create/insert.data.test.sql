@@ -7,10 +7,10 @@ INSERT INTO general.position OVERRIDING SYSTEM VALUE VALUES (1,'Programador');
 --INSERT INTO general.department OVERRIDING SYSTEM VALUE VALUES (1,'Sistemas');
 
 -- Workers
-INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (1,28076011, false, 'Nicolas Zapata', 2, 1, 1);
+INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (1,28076011, false, 'Nicolas Zapata', 2, 14, 1);
 INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (2,28076010, false, 'Jose Perez', 2, 1, 1);
-INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (3,28076009, false, 'Maria Luna', 1, 1, 1);
-INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (4,28076008, false, 'Sofia pacheco', 1, 1, 1);
+INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (3,28076009, false, 'Maria Luna', 1, 2, 1);
+INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (4,28076008, false, 'Sofia pacheco', 1, 3, 1);
 
 -- Attendances
 INSERT INTO attendance_control.attendance OVERRIDING SYSTEM VALUE VALUES
@@ -27,9 +27,8 @@ INSERT INTO attendance_control.attendance OVERRIDING SYSTEM VALUE VALUES
 (11, 4, '2024-08-11', '09:16:24.252248', NULL),
 (12, 3, '2024-08-21', '09:06:51.517465', '15:17:15.602355');
 
--- Para evitar errores de continuidad de secuencia tambien utilice las sentencias de abajo
 
--- SELECT pg_catalog.setval('general.position_id_seq', 2, true);
--- SELECT pg_catalog.setval('general.department_id_seq', 2, true);
--- SELECT pg_catalog.setval('general.workers_id_seq', 5, true);
--- SELECT pg_catalog.setval('attendance_control.attendance_id_seq', 13, true);
+SELECT pg_catalog.setval('general.position_id_seq', 2, true);
+--SELECT pg_catalog.setval('general.department_id_seq', 2, true);
+SELECT pg_catalog.setval('general.workers_id_seq', 5, true);
+SELECT pg_catalog.setval('attendance_control.attendance_id_seq', 13, true);

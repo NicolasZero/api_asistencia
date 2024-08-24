@@ -1,14 +1,20 @@
-const { getAllAttendances, checkIn, checkOut, getAttendanceByFilter } = require("../controllers/controller.attend");
+const { getAttendancesToday,getAllAttendances, checkIn, checkOut, getAttendanceByFilter } = require("../controllers/controller.attend");
 
 const routes = [
   {
     method: "GET",
     url: "/attendance",
+    handler: getAttendancesToday,
+  },
+  {
+    method: "GET",
+    url: "/attendance/pag/:page/lim/:limit",
+    // url example:  /attendance/pag/1/lim/10
     handler: getAllAttendances,
   },
   {
     method: "POST",
-    url: "/attendance/filter",
+    url: "/attendance/filter/pag/:page/lim/:limit",
     // body: { date_end:string, date_start:string, department:number, ic:number }
     handler: getAttendanceByFilter,
   },
