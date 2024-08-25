@@ -11,6 +11,7 @@ INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (1,28076011, false, '
 INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (2,28076010, false, 'Jose Perez', 2, 1, 1);
 INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (3,28076009, false, 'Maria Luna', 1, 2, 1);
 INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (4,28076008, false, 'Sofia pacheco', 1, 3, 1);
+INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (5,28076008, false, 'Karen Ramirez', 1, 3, 1);
 
 -- Attendances
 INSERT INTO attendance_control.attendance OVERRIDING SYSTEM VALUE VALUES
@@ -30,5 +31,5 @@ INSERT INTO attendance_control.attendance OVERRIDING SYSTEM VALUE VALUES
 
 SELECT pg_catalog.setval('general.position_id_seq', 2, true);
 --SELECT pg_catalog.setval('general.department_id_seq', 2, true);
-SELECT pg_catalog.setval('general.workers_id_seq', 5, true);
+SELECT pg_catalog.setval('general.workers_id_seq', 6, true);
 SELECT pg_catalog.setval('attendance_control.attendance_id_seq', 13, true);
