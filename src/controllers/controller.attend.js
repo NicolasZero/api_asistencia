@@ -87,7 +87,7 @@ const getAttendanceByFilter = async (request, reply) => {
             valueQuery.push(ic)
         }
 
-        textQuery += `LIMIT ${limit} OFFSET ${offset}`
+        textQuery += ` LIMIT ${limit} OFFSET ${offset}`
 
         const resp = await query(textQuery, valueQuery)
         return reply.send({ data: resp.rows, status: "ok" })
