@@ -14,6 +14,7 @@ LEFT JOIN general.department AS d ON d.id = w.department_id
 LEFT JOIN general.position AS p ON p.id = w.position_id;
 
 -- attendance_control
-CREATE VIEW attendance_control.view_attendance AS SELECT a.*, TO_CHAR(a.date_attendance, 'dd/mm/yyyy') as date_attendance_string, TO_CHAR(a.check_in,'HH24:MI') as check_in_string, TO_CHAR(a.check_out,'HH24:MI') as check_out_string, w.identity_card, w.full_name, w.status, w.gender, w.gender_id, w.department, w.department_id
+CREATE VIEW attendance_control.view_attendance AS SELECT a.*, TO_CHAR(a.date_attendance, 'dd/mm/yyyy') as date_attendance_string, TO_CHAR(a.check_in,'HH24:MI AM') as check_in_string, TO_CHAR(a.check_out,'HH24:MI AM') as check_out_string, w.identity_card, w.full_name, w.status, w.gender, w.position, w.position_id, w.gender_id, w.department, w.department_id
 FROM attendance_control.attendance as a
-LEFT JOIN general.view_workers as w ON w.id = a.worker_id;
+LEFT JOIN general.view_workers as w ON w.id = a.worker_id
+ORDER BY a.date_attendance DESC;

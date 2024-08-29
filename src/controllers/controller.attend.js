@@ -35,7 +35,7 @@ const getAttendancebyWorker = async (request, reply) => {
         //     "department_id": 14
 
         if (resp.rowCount == 0) {
-            const textQuery = "SELECT 0 as id, null as date_attendance, id as worker_id, identity_card, full_name, status, gender, gender_id, department, department_id FROM general.view_workers WHERE identity_card = $1"
+            const textQuery = "SELECT 0 as id, null as date_attendance, id as worker_id, identity_card, full_name, status, gender, gender_id, department, department_id, position, position_id FROM general.view_workers WHERE identity_card = $1"
             const resp = await query(textQuery,[value])    
             return reply.send({ data: resp.rows, status: "ok" });
         }
@@ -150,7 +150,7 @@ const checkIn = async (request, reply) => {
         // SQL que inserta la asistenca solo si no está ya registrada el dia de hoy
         const queryText = "INSERT INTO attendance_control.attendance (worker_id, date_attendance, check_in)" +
             "SELECT $1, current_date, current_time WHERE NOT EXISTS" +
-            "(select date_attendance from attendance_control.attendance where date_attendance = current_date and worker_id = $1)"
+            "(select date_attendance from attendance_control.attendance where date_attendance = current_date and worker_id = $1) RETURNING TO_CHAR(check_in,'HH24:MI AM') as check_in_string" 
 
         const resp = await query(queryText, [id])
 
@@ -158,7 +158,7 @@ const checkIn = async (request, reply) => {
             return reply.code(409).send({ error: "Ese trabajador ya registro su hora de entrada del dia de hoy", status: "failed" });
         }
 
-        return reply.code(201).send({ data: "registrado", status: "ok" });
+        return reply.code(201).send({ data: resp.rows[0], status: "ok" });
     } catch (error) {
         reply.code(409).send({ error: "error", status: "failed" });
         console.log(error)
@@ -174,15 +174,16 @@ const checkOut = async (request, reply) => {
         }
 
         // actualiza el campo de salida del registro de asistencia del trabajador si está en null y si es del dia de hoy
-        const queryText = "UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1"
+        const queryText = "UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1 RETURNING TO_CHAR(check_out,'HH24:MI AM') as check_out_string"
         const resp = await query(queryText, [id])
         if (resp.rowCount != 1) {
             return reply.code(409).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
         }
 
-        return reply.code(201).send({ data: "Actualizado", status: "ok" });
+        return reply.code(201).send({ data: resp.rows[0], status: "ok" });
     } catch (error) {
         reply.code(409).send({ error: "error", status: "failed" })
+        console.log(error)
     }
 }
 
