@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS general.workers (
     gender_id integer NOT NULL DEFAULT 1,
     department_id integer NOT NULL,
     position_id integer NOT NULL,
-    payroll_type_id varchar(200) NOT NULL,
+    payroll_type_id integer NOT NULL,
     status varchar NOT NULL DEFAULT true,
     created date DEFAULT CURRENT_DATE,
     updated date

@@ -1,9 +1,8 @@
 const fastify = require("fastify")({ logger: false });
 const { verification } = require("./db/postgresql");
-const routeLicense = require("./routes/routes.js");
-const cors = require('@fastify/cors') 
+const cors = require('@fastify/cors')
 
-fastify.register(cors, { 
+fastify.register(cors, {
   // put your options here
 })
 
@@ -15,9 +14,20 @@ fastify.get("/", (request, reply) => {
   reply.send({ msg: "Wellcome" });
 });
 
-routeLicense.forEach((route) => {
-  fastify.route(route);
-});
+// Nombre de las rutas
+const routeName = ['auth','user','attendance','worker']
+
+routeName.forEach((route) => {
+  fastify.register(require(`./routes/route.${route}.js`), { prefix: `${route}` })
+})
+
+// const listeners = ['SIGINT', 'SIGTERM']
+// listeners.forEach((signal) => {
+//   process.on(signal, async () => {
+//     await fastify.close()
+//     process.exit(0)
+//   })
+// })
 
 const start = async () => {
   try {
@@ -31,4 +41,5 @@ const start = async () => {
     process.exit(1);
   }
 };
+
 start();

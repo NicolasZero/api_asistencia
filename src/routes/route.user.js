@@ -1,15 +1,10 @@
-const routes = [{
-    method: 'GET',
-    url: '/user',
-    handler: function (request, reply) {
-        reply.send({ data: 'all user data' })
-    }
-},
-{
-    method: 'GET',
-    url: '/user/:id',
-    handler: function (request, reply) {
-        reply.send({ data: 'a user data' })
-    }
-}]
-module.exports = routes
+// const {} = require('../controllers/controller.user')
+
+module.exports = async function (fastify) {
+    fastify.get('/', (req, reply) => {
+        reply.send({ message: '/ route user' })
+    })
+    fastify.post('/register', () => { })
+    fastify.post('/login', () => { })
+    fastify.delete('/logout', () => { })
+}

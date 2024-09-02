@@ -100,3 +100,13 @@ INSERT INTO general.position OVERRIDING SYSTEM VALUE VALUES
 (81,'TRABAJADORA SOCIAL');
 
 SELECT pg_catalog.setval('general.position_id_seq', 82, true);
+
+INSERT INTO general.payroll_type OVERRIDING SYSTEM VALUE VALUES 
+(1,'DEF. DELG'),
+(2,'DIRECTIVO'),
+(3,'EMP CONTRA'),
+(4,'EMP FIJO'),
+(5,'OBRERO CONTRA'),
+(6,'OBRERO FIJO');
+
+SELECT pg_catalog.setval('general.payroll_type_id_seq', 7, true);

@@ -18,3 +18,7 @@ CREATE VIEW attendance_control.view_attendance AS SELECT a.*, TO_CHAR(a.date_att
 FROM attendance_control.attendance as a
 LEFT JOIN general.view_workers as w ON w.id = a.worker_id
 ORDER BY a.date_attendance DESC;
+
+CREATE VIEW attendance_control.view_users AS SELECT u.*, r.role, w.identity_card, w.full_name, w.status, w.gender, w.position, w.position_id, w.gender_id, w.department, w.department_id FROM attendance_control.users AS u
+LEFT JOIN attendance_control.roles AS r ON r.id = u.role_id
+LEFT JOIN general.view_workers AS w ON w.id = u.worker_id;

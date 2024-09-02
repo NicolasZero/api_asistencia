@@ -1,8 +1,15 @@
-const {authUser} = require('../controllers/controller.auth')
+const controller = require('../controllers/controller.auth')
 
-const routes = [{
-    method: 'POST',
-    url: '/login',
-    handler: authUser
-}]
-module.exports = routes
+module.exports = async function (fastify) {
+    fastify.get('/', (req, reply) => {
+        reply.send({ message: '/ route auth' })
+    })
+    
+    // Para encriptar el password / solo para pruebas
+    fastify.post('/encrypt', controller.register)
+
+    // body: { username:string, password:string }
+    fastify.post('/login', controller.authUser)
+
+    fastify.delete('/logout', () => { })
+}

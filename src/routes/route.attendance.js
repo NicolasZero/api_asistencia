@@ -1,46 +1,26 @@
-const { getAttendancesToday,getAllAttendances,checkIn,checkOut,getAttendanceByFilter,getAttendancebyWorker} = require("../controllers/controller.attend");
+const controller = require("../controllers/controller.attend");
 
-const routes = [
-  // Consulta de las asistencias del trabajador (por cedula) especificado del dia de hoy
-  {
-    method: "GET",
-    url: "/attendance/:value",
-    handler: getAttendancebyWorker,
-  },
+module.exports = async function (fastify) {
   // Consulta de las asistencias de todos los trabajadores del dia de hoy
-  {
-    method: "GET",
-    url: "/attendance",
-    handler: getAttendancesToday,
-  },
-  // Consulta de todas las asistencias (utiliza paginacion)
-  {
-    method: "GET",
-    url: "/attendance/pag/:page/lim/:limit",
-    // url example:  /attendance/pag/1/lim/10
-    handler: getAllAttendances,
-  },
-  // Consulta de todas las asistencias con filtros (utiliza paginacion)
-  {
-    method: "POST",
-    url: "/attendance/filter/pag/:page/lim/:limit",
-    // body: { date_end:string, date_start:string, department:number, ic:number }
-    handler: getAttendanceByFilter,
-  },
-  // Registra la hora de entrada
-  {
-    method: "POST",
-    url: "/attendance",
-    handler: checkIn
-    // body: {id: number}
-  },
-  // Registra la hora de salida
-  {
-    method: "PATCH",
-    url: "/attendance",
-    handler: checkOut,
-    // body: {id: number}
-  }
-];
+  fastify.get("/", controller.getAttendancesToday);
+  
+  // Consulta de las asistencias del trabajador (por cedula) especificado del dia de hoy
+  fastify.get("/:value", controller.getAttendancebyWorker);
 
-module.exports = routes;
+  // Consulta de todas las asistencias (utiliza paginacion)
+  // url example:  /attendance/pag/1/lim/10
+  fastify.get("/pag/:page/lim/:limit", controller.getAllAttendances);
+
+  // Consulta de todas las asistencias con filtros (utiliza paginacion)
+  // body: { ?date_end:string, ?date_start:string, ?department:number, ?ic:number }
+  // ? = Opcional, no agregar el signo de interrogacion
+  fastify.get("/filter/pag/:page/lim/:limit", controller.getAttendanceByFilter);
+
+  // Registra la hora de entrada
+  // body: {id: number}
+  fastify.post("/", controller.checkIn);
+
+  // Registra la hora de salida
+  // body: {id: number}
+  fastify.patch("/", controller.checkOut);
+}

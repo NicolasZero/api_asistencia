@@ -17,23 +17,6 @@ const getAttendancebyWorker = async (request, reply) => {
         const resp = await query("SELECT * FROM attendance_control.view_attendance WHERE date_attendance = current_date AND identity_card = $1",[value])
         
         // En caso de no encontrar resultados manda los datos del trabajador
-
-        // "id": 1,
-        //     "worker_id": 1,
-        //     "date_attendance": "2024-08-07T04:00:00.000Z",
-        //     "check_in": "15:06:51.517465",
-        //     "check_out": "15:17:15.602355",
-        //     "date_attendance_string": "07/08/2024",
-        //     "check_in_string": "15:06",
-        //     "check_out_string": "15:17",
-        //     "identity_card": 28076011,
-        //     "full_name": "Nicolas Zapata",
-        //     "status": "true",
-        //     "gender": "Hombre",
-        //     "gender_id": 2,
-        //     "department": "OFICINA DE SISTEMAS Y TECNOLOGIA DE LA INFORMACION",
-        //     "department_id": 14
-
         if (resp.rowCount == 0) {
             const textQuery = "SELECT 0 as id, null as date_attendance, id as worker_id, identity_card, full_name, status, gender, gender_id, department, department_id, position, position_id FROM general.view_workers WHERE identity_card = $1"
             const resp = await query(textQuery,[value])    
@@ -42,7 +25,7 @@ const getAttendancebyWorker = async (request, reply) => {
 
         return reply.send({ data: resp.rows, status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" });
+        reply.code(500).send({ error: "error", status: "failed" });
         console.log(error);
     }
 }
@@ -52,7 +35,7 @@ const getAttendancesToday = async (request, reply) => {
         const resp = await query("SELECT * FROM attendance_control.view_attendance WHERE date_attendance = current_date")
         return reply.send({ data: resp.rows, status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" });
+        reply.code(500).send({ error: "error", status: "failed" });
         console.log(error);
     }
 }
@@ -73,7 +56,7 @@ const getAllAttendances = async (request, reply) => {
         const resp = await query(textQuery)
         return reply.send({ data: resp.rows, status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" });
+        reply.code(500).send({ error: "error", status: "failed" });
         console.log(error);
     }
 };
@@ -133,7 +116,7 @@ const getAttendanceByFilter = async (request, reply) => {
         return reply.send({ data: resp.rows, status: "ok" })
 
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" })
+        reply.code(500).send({ error: "error", status: "failed" })
         console.log(error)
     }
 };
@@ -160,7 +143,7 @@ const checkIn = async (request, reply) => {
 
         return reply.code(201).send({ data: resp.rows[0], status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" });
+        reply.code(500).send({ error: "error", status: "failed" });
         console.log(error)
     }
 }
@@ -177,12 +160,12 @@ const checkOut = async (request, reply) => {
         const queryText = "UPDATE attendance_control.attendance SET check_out = CURRENT_TIME WHERE date_attendance = CURRENT_DATE AND check_out is null AND worker_id = $1 RETURNING TO_CHAR(check_out,'HH24:MI AM') as check_out_string"
         const resp = await query(queryText, [id])
         if (resp.rowCount != 1) {
-            return reply.code(409).send({ error: "Ese trabajador ya registro su hora de salida del dia de hoy", status: "failed" });
+            return reply.code(409).send({ error: "Ya registro su hora de salida o no registro su hora de entrada de hoy", status: "failed" });
         }
 
         return reply.code(201).send({ data: resp.rows[0], status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" })
+        reply.code(500).send({ error: "error", status: "failed" })
         console.log(error)
     }
 }

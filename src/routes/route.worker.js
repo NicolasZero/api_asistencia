@@ -1,19 +1,14 @@
-const {getWorker, getAllWorkers} = require('../controllers/controller.worker')
+// const {getWorker, getAllWorkers} = require('../controllers/controller.worker')
+const controller = require('../controllers/controller.worker')
 
-const routes = [{
-    method: 'GET',
-    url: '/worker/pag/:page/lim/:limit',
-    // url example:  /attendance/pag/1/lim/10
-    handler: getAllWorkers
-},
-{
-    method: 'GET',
-    url: '/worker/id/:value',
-    handler: getWorker('id')
-},
-{
-    method: 'GET',
-    url: '/worker/ic/:value',
-    handler: getWorker('identity_card')
-}]
-module.exports = routes
+module.exports = async function (fastify) {
+    // buscar todos los trabajadores
+    // url example:  /attendance/pag/1/lim/1
+    fastify.get('/pag/:page/lim/:limit', controller.getAllWorkers)
+
+    // buscar trabajador por id
+    fastify.get('/id/:value', controller.getWorker('id'))
+
+    // buscar trabajador por cedula
+    fastify.get('/ic/:value', controller.getWorker('identity_card'))
+}

@@ -1,46 +1,58 @@
-// const { encrypt, compare } = require("../helpers/helperEncrypt.js");
+const { encrypt,compare } = require("../helpers/helperEncrypt.js");
 const { query } = require("../db/postgresql");
 // const { tokenSign, verifyToken } = require("../helpers/helperToken.js");
 
-const authUser = async (req, res) => {
+const register = async (request, reply) => {
   try {
-    const { username, password } = req.body;
-    const response = await query("SELECT * FROM view_user_data WHERE username = $1", [username])
-    const passwordInDb = response.rows.length !== 0 ? response.rows[0].password : false;
-
-    if (passwordInDb !== false) {
-      const checkPass = await compare(password, response.rows[0].password);
-      const tokenSession = await tokenSign(response.rows[0]);
-      if (checkPass) {
-        return res.json({
-          status: "OK",
-          data: response.rows,
-          tokenSession,
-        });
-      }
+    const { username, password } = request.body;
+    if (!username || !password) {
+      return reply.code(400).send({ error: "body not valid", status: "failed" });
     }
-    return res.status(409).json({ status: "FAILED", error: { msg: "Usuario o contraseña no coinciden" } });
-  } catch (error) {
-    httpError(res, error);
-  }
-};
+    const hashPassword = await encrypt(password);
+    return reply.send({status: "ok", data: {username,hashPassword}})
 
-const refreshToken = async (req, res) => {
-  const refreshToken = req.headers.refresh
-  const tokenData = await verifyToken(refreshToken)
-  if (tokenData) {
-    const tokenSession = await tokenSign({ id: tokenData._id });
-    return res.json({
-      status: "OK",
-      data: "refreshed",
-      tokenSession
-    })
-  } else {
-    return res.status(409).send({
-      status: "FAILED",
-      data: { error: "Error en la autenticación del usuario" }
-    })
+  } catch (error) {
+    reply.code(500).send({ error: "error", status: "failed" });
+    console.log(error)
   }
 }
 
-module.exports = { authUser, refreshToken };
+const authUser = async (request, reply) => {
+  try {
+    const { username, password } = request.body;
+    if (!username || !password) {
+      return reply.code(400).send({ error: "body not valid", status: "failed" });
+    }
+
+    const resp = await query("SELECT * FROM attendance_control.view_users WHERE username = $1", [username])
+    const passwordInDb = resp.rows.length !== 0 ? resp.rows[0].password : false;
+
+    // valida que el usuario exista
+    if (passwordInDb === false) {
+      return reply.status(409).send({ status: "failed", error: "Usuario o contraseña no coinciden"  });
+    }
+    const checkPass = await compare(password, resp.rows[0].password);
+    // const tokenSession = await tokenSign(response.rows[0]);
+    const tokenSession = "token";
+    if (checkPass) {
+      return reply.send({status: "ok",data: resp.rows,tokenSession,});
+    }
+  } catch (error) {
+    reply.code(500).send({ error: "error", status: "failed" });
+    console.log(error)
+  }
+};
+
+const refreshToken = async (request, reply) => {
+  const refreshToken = request.headers.refresh
+  const tokenData = await verifyToken(refreshToken)
+  if (tokenData) {
+    const tokenSession = await tokenSign({ id: tokenData._id });
+    return reply.json({status: "OK",data: "refreshed",tokenSession})
+  } else {
+    return reply.code(409).send({ error: "Error en la autenticación del usuario", status: "failed" });
+    console.log(error)
+  }
+}
+
+module.exports = { authUser, refreshToken, register };
