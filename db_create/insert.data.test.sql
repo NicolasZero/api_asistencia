@@ -8,6 +8,7 @@
 
 -- Roles
 INSERT INTO attendance_control.roles OVERRIDING SYSTEM VALUE VALUES (1, 'admin');
+INSERT INTO attendance_control.roles OVERRIDING SYSTEM VALUE VALUES (2, 'user');
 
 -- Workers
 INSERT INTO general.workers OVERRIDING SYSTEM VALUE VALUES (1,28076011, false, 'Nicolas Zapata', 2, 14, 73,4);

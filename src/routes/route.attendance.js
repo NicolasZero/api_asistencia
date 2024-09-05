@@ -14,7 +14,7 @@ module.exports = async function (fastify) {
   // Consulta de todas las asistencias con filtros (utiliza paginacion)
   // body: { ?date_end:string, ?date_start:string, ?department:number, ?ic:number }
   // ? = Opcional, no agregar el signo de interrogacion
-  fastify.get("/filter/pag/:page/lim/:limit", controller.getAttendanceByFilter);
+  fastify.post("/filter/pag/:page/lim/:limit", controller.getAttendanceByFilter);
 
   // Registra la hora de entrada
   // body: {id: number}

@@ -1,4 +1,5 @@
 const { query } = require("../db/postgresql");
+const {convertDateFormat} = require("../utils/formatDate")
 
 // const date = new Date()
 // const year = date.getFullYear()
@@ -89,7 +90,10 @@ const getAttendanceByFilter = async (request, reply) => {
 
         // filter by date
         if (date_end && date_start) {
-            if (new Date(date_end) < new Date(date_start)) {
+            const dateStartMilliseconds = new Date(convertDateFormat(date_start)).getTime()
+            const dateEndMilliseconds = new Date(convertDateFormat(date_end)).getTime()
+            if (dateStartMilliseconds > dateEndMilliseconds) {
+                console.log(dateStartMilliseconds,dateEndMilliseconds)
                 return reply.code(400).send({ error: "Rango de fecha no valido", status: "failed" })
             }
             textQuery += " AND date_attendance BETWEEN $1 AND $2"
