@@ -65,7 +65,14 @@ const getAllAttendances = async (request, reply) => {
 const getAttendanceByFilter = async (request, reply) => {
     try {
         const { page, limit } = request.params
-        const { date_end, date_start, department, ic } = request.body
+        // cada variable en el request es opcional,
+        // pero minimo hay que mandarle un valor,
+        // siempre mandar un objeto incluso si no hay valores
+        if (!request.body) {
+            return reply.code(400).send({ error: "body not valid", status: "failed" });
+        }
+
+        const { department, ic, dateStartMilliseconds, dateEndMilliseconds } = request.body
 
         // verifica que el request params sea valido
         if (!Number(page) || !Number(limit) || limit > 1000  || limit < 1) {
@@ -74,8 +81,10 @@ const getAttendanceByFilter = async (request, reply) => {
 
         // Request body verification
         if (
-            (typeof department !== "number" && typeof department !== "undefined") ||
-            (typeof ic !== "number" && typeof ic !== "undefined")
+            (!Number(department) && typeof department !== "undefined") ||
+            (!Number(ic) && typeof ic !== "undefined") ||
+            (!Number(dateStartMilliseconds) && typeof dateStartMilliseconds !== "undefined") ||
+            (!Number(dateEndMilliseconds) && typeof dateEndMilliseconds !== "undefined")
         ) {
             return reply.code(400).send({ error: "body not valid", status: "failed" })
         }
@@ -89,15 +98,18 @@ const getAttendanceByFilter = async (request, reply) => {
         let num = 1
 
         // filter by date
-        if (date_end && date_start) {
-            const dateStartMilliseconds = new Date(convertDateFormat(date_start)).getTime()
-            const dateEndMilliseconds = new Date(convertDateFormat(date_end)).getTime()
-            if (dateStartMilliseconds > dateEndMilliseconds) {
-                console.log(dateStartMilliseconds,dateEndMilliseconds)
+        if (dateStartMilliseconds && dateEndMilliseconds) {
+            // const dateStartMilliseconds = new Date(convertDateFormat(date_start)).getTime()
+            // const dateEndMilliseconds = new Date(convertDateFormat(date_end)).getTime()
+            // 1420070400000 = 01/01/2015 00:00:00 / new Date("2015-01-01").getTime()
+            if (dateStartMilliseconds > dateEndMilliseconds || dateStartMilliseconds < 1420070400000 || dateEndMilliseconds >= Date.now() ) {
+                // console.log(dateStartMilliseconds,dateEndMilliseconds)
                 return reply.code(400).send({ error: "Rango de fecha no valido", status: "failed" })
             }
+            const dateStart = new Date(dateStartMilliseconds).toISOString().substring(0,10)
+            const dateEnd = new Date(dateEndMilliseconds).toISOString().substring(0,10)
             textQuery += " AND date_attendance BETWEEN $1 AND $2"
-            valueQuery.push(date_start, date_end)
+            valueQuery.push(dateStart, dateEnd)
             num = 3
         }
 
