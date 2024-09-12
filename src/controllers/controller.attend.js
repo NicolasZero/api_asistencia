@@ -17,6 +17,7 @@ const getAttendancebyWorker = async (request, reply) => {
         }
         const resp = await query("SELECT * FROM attendance_control.view_attendance WHERE date_attendance = current_date AND identity_card = $1",[value])
         
+        console.log(resp.rowCount)
         // En caso de no encontrar resultados manda los datos del trabajador
         if (resp.rowCount == 0) {
             const textQuery = "SELECT 0 as id, null as date_attendance, id as worker_id, identity_card, full_name, status, gender, gender_id, department, department_id, position, position_id FROM general.view_workers WHERE identity_card = $1"
@@ -81,13 +82,16 @@ const getAttendanceByFilter = async (request, reply) => {
 
         // Request body verification
         if (
-            (!Number(department) && typeof department !== "undefined") ||
-            (!Number(ic) && typeof ic !== "undefined") ||
-            (!Number(dateStartMilliseconds) && typeof dateStartMilliseconds !== "undefined") ||
-            (!Number(dateEndMilliseconds) && typeof dateEndMilliseconds !== "undefined")
+            (!Number(department) && typeof department !== "number") ||
+            (!Number(ic) && typeof ic !== "number") ||
+            (!Number(dateStartMilliseconds) && typeof dateStartMilliseconds !== "number") ||
+            (!Number(dateEndMilliseconds) && typeof dateEndMilliseconds !== "number")
         ) {
             return reply.code(400).send({ error: "body not valid", status: "failed" })
         }
+
+        const dateEnd = Number(dateEndMilliseconds)
+        const dateStart = Number(dateStartMilliseconds)
 
         // calcula desde cual registro empezara a mostrar los resultados
         const offset = (page - 1) * limit
@@ -98,18 +102,18 @@ const getAttendanceByFilter = async (request, reply) => {
         let num = 1
 
         // filter by date
-        if (dateStartMilliseconds && dateEndMilliseconds) {
-            // const dateStartMilliseconds = new Date(convertDateFormat(date_start)).getTime()
-            // const dateEndMilliseconds = new Date(convertDateFormat(date_end)).getTime()
+        if (dateStart && dateEnd) {
+            // const dateStart = new Date(convertDateFormat(date_start)).getTime()
+            // const dateEnd = new Date(convertDateFormat(date_end)).getTime()
             // 1420070400000 = 01/01/2015 00:00:00 / new Date("2015-01-01").getTime()
-            if (dateStartMilliseconds > dateEndMilliseconds || dateStartMilliseconds < 1420070400000 || dateEndMilliseconds >= Date.now() ) {
-                // console.log(dateStartMilliseconds,dateEndMilliseconds)
+            if (dateStart > dateEnd || dateStart < 1420070400000 || dateEnd > Date.now() ) {
+                // console.log(dateStart,dateEnd)
                 return reply.code(400).send({ error: "Rango de fecha no valido", status: "failed" })
             }
-            const dateStart = new Date(dateStartMilliseconds).toISOString().substring(0,10)
-            const dateEnd = new Date(dateEndMilliseconds).toISOString().substring(0,10)
+            const dateStartString = new Date(dateStart).toISOString().substring(0,10)
+            const dateEndString = new Date(dateEnd).toISOString().substring(0,10)
             textQuery += " AND date_attendance BETWEEN $1 AND $2"
-            valueQuery.push(dateStart, dateEnd)
+            valueQuery.push(dateStartString, dateEndString)
             num = 3
         }
 
@@ -126,7 +130,7 @@ const getAttendanceByFilter = async (request, reply) => {
             valueQuery.push(ic)
         }
 
-        textQuery += ` LIMIT ${limit} OFFSET ${offset}`
+        textQuery += ` LIMIT ${limit} OFFSET ${offset} ORDER BY date_attendance DESC`
 
         const resp = await query(textQuery, valueQuery)
         return reply.send({ data: resp.rows, status: "ok" })
