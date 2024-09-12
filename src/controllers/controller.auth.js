@@ -27,16 +27,20 @@ const authUser = async (request, reply) => {
     const resp = await query("SELECT * FROM attendance_control.view_users WHERE username = $1", [username])
     const passwordInDb = resp.rows.length !== 0 ? resp.rows[0].password : false;
 
+    // console.log(resp)
     // valida que el usuario exista
-    if (passwordInDb === false) {
-      return reply.status(409).send({ status: "failed", error: "Usuario o contraseña no coinciden"  });
+    if (resp.rowCount == 0) {
+      return reply.status(409).send({ status: "failed", error: "Usuario o contraseña no coinciden"});
     }
+
     const checkPass = await compare(password, resp.rows[0].password);
+
     // const tokenSession = await tokenSign(response.rows[0]);
     const tokenSession = "token";
-    if (checkPass) {
-      return reply.send({status: "ok",data: resp.rows,tokenSession,});
+    if (!checkPass) {
+      return reply.status(409).send({ status: "failed", error: "Usuario o contraseña no coinciden"});
     }
+    return reply.send({status: "ok",data: resp.rows,tokenSession,});
   } catch (error) {
     reply.code(500).send({ error: "error", status: "failed" });
     console.log(error)
