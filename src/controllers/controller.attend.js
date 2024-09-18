@@ -102,7 +102,7 @@ const getAttendanceByFilter = async (request, reply) => {
         let num = 1
 
         // filter by date
-        if (dateStart && dateEnd) {
+        if (dateStart || dateEnd) {
             // const dateStart = new Date(convertDateFormat(date_start)).getTime()
             // const dateEnd = new Date(convertDateFormat(date_end)).getTime()
             // 1420070400000 = 01/01/2015 00:00:00 / new Date("2015-01-01").getTime()
