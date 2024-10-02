@@ -17,7 +17,7 @@ const getAttendancebyWorker = async (request, reply) => {
         }
         const resp = await query("SELECT * FROM attendance_control.view_attendance WHERE date_attendance = current_date AND identity_card = $1",[value])
         
-        console.log(resp.rowCount)
+        // console.log(resp.rowCount)
         // En caso de no encontrar resultados manda los datos del trabajador
         if (resp.rowCount == 0) {
             const textQuery = "SELECT 0 as id, null as date_attendance, id as worker_id, identity_card, full_name, status, gender, gender_id, department, department_id, position, position_id FROM general.view_workers WHERE identity_card = $1"
