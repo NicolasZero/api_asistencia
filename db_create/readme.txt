@@ -10,5 +10,6 @@ Orden/Order
 -data-
 5° - insert.public
 6° - insert.general
+7° - insert.attendance_control
 -test-
 n° - insert.data.test
