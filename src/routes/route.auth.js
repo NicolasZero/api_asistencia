@@ -5,11 +5,14 @@ module.exports = async function (fastify) {
         reply.send({ message: '/ route auth' })
     })
     
-    // Para encriptar el password / solo para pruebas
-    fastify.post('/encrypt', controller.register)
+    // fastify.post('/encrypt', controller.register)
+    
+    // Para encriptar el password del usuario
+    fastify.get('/password/:password', controller.password)
+
 
     // body: { username:string, password:string }
     fastify.post('/login', controller.authUser)
 
-    fastify.delete('/logout', () => { })
+    // fastify.delete('/logout', () => { })
 }

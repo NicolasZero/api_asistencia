@@ -17,6 +17,22 @@ const register = async (request, reply) => {
   }
 }
 
+
+const password = async (request, reply) => {
+  try {
+    const { password } = request.params;
+    if (!password) {
+      return reply.code(400).send({ error: "body not valid", status: "failed" });
+    }
+    const hashPassword = await encrypt(password);
+    return reply.send({status: "ok", data: {password:hashPassword}})
+
+  } catch (error) {
+    reply.code(500).send({ error: "error", status: "failed" });
+    console.log(error)
+  }
+}
+
 const authUser = async (request, reply) => {
   try {
     const { username, password } = request.body;
@@ -59,4 +75,4 @@ const refreshToken = async (request, reply) => {
   }
 }
 
-module.exports = { authUser, refreshToken, register };
+module.exports = { authUser, refreshToken, register, password };
