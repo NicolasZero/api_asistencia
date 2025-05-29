@@ -1,9 +1,10 @@
 const fastify = require("fastify")({ logger: false });
+const fs = require('fs')
 const { verification } = require("./db/postgresql");
 const cors = require('@fastify/cors')
 
 fastify.register(cors, {
-  // put your options here
+  origin: '*'
 })
 
 // Database connection verification
@@ -15,28 +16,29 @@ fastify.get("/", (request, reply) => {
 });
 
 // Nombre de las rutas
-const routeName = ['auth','user','attendance','worker']
+// const routeName = ['auth','user','attendance','worker']
 
-routeName.forEach((route) => {
-  fastify.register(require(`./routes/route.${route}.js`), { prefix: `${route}` })
-})
-
-// const listeners = ['SIGINT', 'SIGTERM']
-// listeners.forEach((signal) => {
-//   process.on(signal, async () => {
-//     await fastify.close()
-//     process.exit(0)
-//   })
+// routeName.forEach((route) => {
+//   fastify.register(require(`./routes/route.${route}.js`), { prefix: `${route}` })
 // })
 
+// Obtiene la dirección de la carpeta de rutas
+const pathRouter = `${__dirname}/routes`
+
+// Genera automaticamente los prefijos para las rutas
+fs.readdirSync(pathRouter).filter((file)=>{
+    const route = file.substring(0, file.length - 3)
+    fastify.register(require(`./routes/${route}.js`), { prefix: route })    
+    // console.log('--->',route)
+})
+
 const start = async () => {
-  const port = process.env.PORT || 3050;
-  const host = process.env.HOST || "0.0.0.0";
+  const { PORT = 3000, HOST = "0.0.0.0" } = process.env;
   try {
     // Start the server on port 3000, listening on all network interfaces
-    await fastify.listen({ port: port, host: host });
+    await fastify.listen({ port: PORT, host: HOST });
     // Log a message to indicate that the API is online
-    console.log(`API running on the port ${port} and host ${host}`);
+    console.log(`API running on the port ${PORT} and host ${HOST}`);
   } catch (err) {
     // Log any error that occurs during server startup and exit the process
     fastify.log.error(err);

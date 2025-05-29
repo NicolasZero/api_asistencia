@@ -11,4 +11,12 @@ module.exports = async function (fastify) {
 
     // buscar trabajador por cedula
     fastify.get('/ic/:value', controller.getWorker('identity_card'))
+
+    // insertar trabajador
+    fastify.post('/insert', controller.addWorker)
+
+    // desactivar trabajador
+    fastify.patch('/deactivate/id/:value', controller.deactivateWorker('id'))
+    fastify.patch('/deactivate/ic/:value', controller.deactivateWorker('identity_card'))
+
 }

@@ -33,14 +33,49 @@ const getAllWorkers = async (request, reply) => {
         const resp = await query(textQuery)
         return reply.send({ data: resp.rows, status: "ok" });
     } catch (error) {
-        reply.code(409).send({ error: "error", status: "failed" });
         console.log(error);
+        return reply.code(409).send({ error: "error", status: "failed" });
     }
 };
 
+const addWorker = async (request, reply) => {
+    try {
+        const { identity_card, is_foreign, full_name, gender_id, department_id, position_id, payroll_type_id, area_coordination_id } = request.body;
 
+        // validations
+        if (!identity_card || typeof is_foreign !== "boolean" || !full_name || !gender_id || !department_id || !position_id || !payroll_type_id || !area_coordination_id) {
+            return reply.code(400).send({ error: "body not valid", status: "failed" });
+        }
+
+        const textQuery = `INSERT INTO general.workers (identity_card, is_foreign, full_name, gender_id, department_id, position_id, payroll_type_id, area_coordination_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`
+        const resp = await query(textQuery, [identity_card, is_foreign, full_name, gender_id, department_id, position_id, payroll_type_id, area_coordination_id])
+        return reply.send({ data: resp.rows, status: "ok" });
+
+    } catch (error) {
+        console.log(error);
+        return reply.code(409).send({ error: "error", status: "failed" });
+    }
+}
+
+const deactivateWorker = (option) => async (request, reply) => {
+    const {value} = request.params
+    const nvalue = Number(value)
+    // console.log(nvalue);
+    
+    // validations
+    if (!nvalue || typeof nvalue !== "number") {
+        return reply.code(400).send({ error: "body not valid", status: "failed" });
+    }
+    
+    const textQuery = `UPDATE general.workers SET status = false WHERE ${option} = $1 RETURNING *`
+    const resp = await query(textQuery, [nvalue])
+    return reply.send({ data: resp.rows, status: "ok" });
+    // return reply.code(409).send({ data: "Prueba", status: "ok" });
+}
 
 module.exports = {
     getAllWorkers,
-    getWorker
+    getWorker,
+    addWorker,
+    deactivateWorker
 }
